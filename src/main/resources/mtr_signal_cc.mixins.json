@@ -1,0 +1,12 @@
+{
+  "required": true,
+  "package": "dev.spotsimon.mtrsignalcc.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "minVersion": "0.8",
+  "mixins": [
+    "SignalBlockEntityMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

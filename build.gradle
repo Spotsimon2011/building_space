@@ -1,0 +1,46 @@
+plugins {
+    id 'java-library'
+    id 'net.neoforged.moddev' version '2.0.28-beta'
+}
+
+version = mod_version
+group = mod_group_id
+base { archivesName = mod_id }
+
+java.toolchain.languageVersion = JavaLanguageVersion.of(21)
+
+repositories {
+    mavenCentral()
+    maven {
+        url = 'https://maven.squiddev.cc'
+        content { includeGroup 'cc.tweaked' }
+    }
+}
+
+neoForge {
+    version = neo_version
+    mods {
+        "${mod_id}" { sourceSet sourceSets.main }
+    }
+    runs {
+        client { client() }
+        server { server(); programArguments.add('--nogui') }
+    }
+}
+
+dependencies {
+    // MTR itself: compile against it, and load it as a mod in the dev runs.
+    compileOnly files("libs/${mtr_jar}")
+    runtimeOnly files("libs/${mtr_jar}")
+
+    // CC:Tweaked (only dan200.computercraft.api.* is used)
+    compileOnly "cc.tweaked:cc-tweaked-1.21.1-core-api:${cc_version}"
+    compileOnly "cc.tweaked:cc-tweaked-1.21.1-forge-api:${cc_version}"
+    runtimeOnly "cc.tweaked:cc-tweaked-1.21.1-forge:${cc_version}"
+}
+
+processResources {
+    var props = [mod_id: mod_id, mod_name: mod_name, mod_version: mod_version]
+    inputs.properties props
+    filesMatching('META-INF/neoforge.mods.toml') { expand props }
+}

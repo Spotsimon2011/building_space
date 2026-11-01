@@ -1,0 +1,42 @@
+name: Build jar
+
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout this addon
+        uses: actions/checkout@v4
+
+      # The MTR jar is only needed to compile against; it is stored with Git LFS in your mod_check repo.
+      - name: Fetch MTR jar (Git LFS)
+        uses: actions/checkout@v4
+        with:
+          repository: Spotsimon2011/mod_check
+          lfs: true
+          path: mtr-src
+
+      - name: Put MTR jar in libs/
+        run: |
+          mkdir -p libs
+          cp mtr-src/MTR-neoforge-4.1.0-beta.2-1.21.1-signal-facing-fix.jar libs/
+          ls -la libs
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - uses: gradle/actions/setup-gradle@v4
+
+      - name: Build
+        run: ./gradlew build --no-daemon
+
+      - name: Upload jar
+        uses: actions/upload-artifact@v4
+        with:
+          name: mtr_signal_cc-jar
+          path: build/libs/mtr_signal_cc-*.jar
